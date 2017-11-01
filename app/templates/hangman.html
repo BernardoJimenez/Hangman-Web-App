@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+<!-- inherit from base.html -->
+{% import "bootstrap/wtf.html" as wtf %}
+<!-- import bootstrap wtform extension -->
+
+{% block title %}Hangman App{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+  <h1>Hangman! <small>A web app by Bernardo Jimenez</small></h1>
+</div>
+
+<div class="container">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert"></button>
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+
+<!-- hangman state images named after number of bad guesses already made -->
+<img src="static/Hangmen/{{ game_logic.bad_guesses }}.jpg"
+alt="Stickman state" width="350" height="450" class="img-responsive center-block" />
+
+
+<div style="clear: both">
+    <h2 style="float:center;" class="text-center"> </h4>
+    <h2 style="float:center;" class="text-center"><strong>{% for letter in game_logic.current_progress %}{{ letter }} {% endfor %}</strong></h4>
+</div>
+
+<p>{% if not game_logic.all_guesses %}Welcome. {{ game_logic.length_notice }}!{% endif %}</p>
+
+{% if not game_logic.game_over %}
+<form class="form form-horizontal" method="post" role="form">
+  {{ form.hidden_tag() }}
+  {{ wtf.form_errors(form, hiddens="only") }}
+  {{ wtf.form_field(form.user_guess, autofocus=true, placeholder="Type letter, then press Enter") }}
+  <!-- AUTOFOCUS ADDED -->
+</form>
+{% else %}
+{{ wtf.quick_form(form) }}
+<h4 class="bg-info">{{ game_logic.game_over_message() }}</h4>
+{% endif %}
+
+<p class="text-center">Previous guesses: {% for g in game_logic.all_guesses[:-1] %}{{ g }}, {% endfor %}{{ game_logic.all_guesses[-1] }}</p>
+
+<div style="clear: both">
+    <h4 style="float:left;" class="text-success">Wins: {{ wins }}</h4>
+    <h4 style="float:right;" class="text-danger text-right">Losses: {{ losses }}</h4>
+</div>
+{% endblock %}
